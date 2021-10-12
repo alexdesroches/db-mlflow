@@ -27,14 +27,10 @@ setup_responses = dbutils.notebook.run("./includes/setup", 0, {"team_name": team
 local_data_path = setup_responses[0]
 dbfs_data_path = setup_responses[1]
 database_name = setup_responses[2]
-experiments_path = setup_responses[3]
 
 print(f"Path to be used for Local Files: {local_data_path}")
 print(f"Path to be used for DBFS Files: {dbfs_data_path}")
 print(f"Database Name: {database_name}")
-print(f"Experiments Path: {experiments_path}")
-
-current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
 
 # COMMAND ----------
 
@@ -44,28 +40,6 @@ current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
 
 spark.sql(f"USE {database_name}")
 
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC # Tracking Experiments with MLflow
-# MAGIC 
-# MAGIC Over the course of the machine learning life cycle, data scientists test many different models from various libraries with different hyperparameters.  Tracking these various results poses an organizational challenge.  In brief, storing experiments, results, models, supplementary artifacts, and code creates significant challenges.
-# MAGIC 
-# MAGIC MLflow Tracking is one of the three main components of MLflow.  It is a logging API specific for machine learning and agnostic to libraries and environments that do the training.  It is organized around the concept of **runs**, which are executions of data science code.  Runs are aggregated into **experiments** where many runs can be a part of a given experiment and an MLflow server can host many experiments.
-# MAGIC 
-# MAGIC Each run can record the following information:<br><br>
-# MAGIC 
-# MAGIC - **Parameters:** Key-value pairs of input parameters such as the number of trees in a random forest model
-# MAGIC - **Metrics:** Evaluation metrics such as RMSE or Area Under the ROC Curve
-# MAGIC - **Artifacts:** Arbitrary output files in any format.  This can include images, pickled models, and data files
-# MAGIC - **Source:** The code that originally ran the experiment
-# MAGIC 
-# MAGIC MLflow tracking also serves as a **model registry** so tracked models can easily be stored and, as necessary, deployed into production.
-# MAGIC 
-# MAGIC Experiments can be tracked using libraries in Python, R, and Java as well as by using the CLI and REST calls.  This course will use Python, though the majority of MLflow functionality is also exposed in these other APIs.
-# MAGIC 
-# MAGIC <div><img src="https://files.training.databricks.com/images/eLearning/ML-Part-4/mlflow-tracking.png" style="height: 400px; margin: 20px"/></div>
 
 # COMMAND ----------
 
@@ -130,13 +104,8 @@ import time
 
 # COMMAND ----------
 
-def training_run(p_max_depth = 2, p_owner = "default", name=None) :
-  
-  experiment_name = '/'+name
-  mlflow.set_experiment(experiment_name)
-  experiment = mlflow.get_experiment_by_name(experiment_name)
-  
-  with mlflow.start_run(experiment_id=experiment.experiment_id) as run:
+def training_run(p_max_depth = 2, p_owner = "default") :
+  with mlflow.start_run() as run:
     # Start a timer to get overall elapsed time for this function
     overall_start_time = time.time()
     
@@ -304,13 +273,21 @@ def training_run(p_max_depth = 2, p_owner = "default", name=None) :
 
 # COMMAND ----------
 
-# Train and test a model.  Run this several times using different parameter values.  
 dbutils.widgets.text("max_depth", "2", "max_depth")
+
+# COMMAND ----------
+
+# Train and test a model.  Run this several times using different parameter values.  
 max_depth = int(dbutils.widgets.get("max_depth"))
+
 for i in range(1, max_depth):
-  run_info = training_run(p_max_depth = i, p_owner = team_name, name=team_name)
+  run_info = training_run(p_max_depth = i, p_owner = team_name)
   print(f"""
 ------- Run Complete -------
 Run ID: {run_info}
 Max Depth: {i}""")
+
+
+# COMMAND ----------
+
 

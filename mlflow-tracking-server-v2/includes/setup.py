@@ -29,6 +29,20 @@ print(f"Path to be used for DBFS Files: {dbfs_data_path}")
 database_name = f"mlflowdemo_{clean_team_name}"
 print(f"Database Name: {database_name}")
 
+# Experiments Path
+experiments_path = f"/Shared/mlflowdemo/experiments/{team_name}/"
+print(f"experiments_path: {experiments_path}")
+dbutils.fs.mkdirs(experiments_path)
+
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+dbutils.fs.mkdirs(experiments_path)
+
 # COMMAND ----------
 
 spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
@@ -84,6 +98,12 @@ stdout.decode('utf-8'), stderr.decode('utf-8')
 dbutils.fs.rm(f"dbfs:/FileStore/mlflowdemo/{dbfs_data_path}/sensor_readings_current_labeled.csv")
 dbutils.fs.cp(f"file:/databricks/driver/{local_data_path}/sensor_readings_current_labeled_v4.csv", f"dbfs:/FileStore/mlflowdemo/{dbfs_data_path}sensor_readings_current_labeled.csv")
 
+
+
+# COMMAND ----------
+
+
+
 # COMMAND ----------
 
 dataPath = f"dbfs:/FileStore/mlflowdemo/{dbfs_data_path}sensor_readings_current_labeled.csv"
@@ -134,6 +154,6 @@ df.createOrReplaceTempView("input_vw")
 
 # Return to the caller, passing the variables needed for file paths and database
 
-response = local_data_path + " " + dbfs_data_path + " " + database_name
+response = local_data_path + " " + dbfs_data_path + " " + database_name + " " + experiments_path
 
 dbutils.notebook.exit(response)
