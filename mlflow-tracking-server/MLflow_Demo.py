@@ -20,7 +20,7 @@
 
 # COMMAND ----------
 
-team_name = dbutils.widgets.get("team_name")
+team_name = "alexdesroches_mlflow"
 
 setup_responses = dbutils.notebook.run("./includes/setup", 0, {"team_name": team_name}).split()
 
