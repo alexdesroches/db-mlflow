@@ -86,6 +86,7 @@ print(f"Selected model URI: {selected_model_uri}")
 import mlflow.spark as mlflow_spark
 from mlflow.tracking import MlflowClient
 client = MlflowClient()
+
 def model_isin_production(model_name):
   try:
     model_production_uri = "models:/{model_name}/production".format(model_name=model_name)
@@ -146,7 +147,3 @@ def promote_model_if_better(model_name, selected_run_id):
 # COMMAND ----------
 
 promote_model_if_better(model_name, selected_run_id)
-
-# COMMAND ----------
-
-

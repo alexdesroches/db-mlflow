@@ -95,7 +95,7 @@ import time
 
 # MAGIC %sql
 # MAGIC SELECT * FROM current_readings_labeled
-# MAGIC -- CAPTEURS
+# MAGIC -- Sensor Data / Capteurs
 
 # COMMAND ----------
 

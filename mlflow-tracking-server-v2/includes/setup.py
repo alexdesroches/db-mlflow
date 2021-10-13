@@ -1,6 +1,10 @@
 # Databricks notebook source
 # Get the caller's team name, which was passed in as a parameter by the notebook that called me.
 # We'll strip special characters from this field, then use it to define unique path names (local and dbfs) as well as a unique database name.
+# Support for Repos
+import os
+os.environ['WSFS_ENABLE'] = 'false'
+os.chdir("/databricks/driver")
 
 dbutils.widgets.text("team_name", "");
 
@@ -33,10 +37,6 @@ print(f"Database Name: {database_name}")
 experiments_path = f"/Shared/mlflowdemo/experiments/{team_name}/"
 print(f"experiments_path: {experiments_path}")
 dbutils.fs.mkdirs(experiments_path)
-
-
-# COMMAND ----------
-
 
 
 # COMMAND ----------
@@ -97,10 +97,6 @@ stdout.decode('utf-8'), stderr.decode('utf-8')
 
 dbutils.fs.rm(f"dbfs:/FileStore/mlflowdemo/{dbfs_data_path}/sensor_readings_current_labeled.csv")
 dbutils.fs.cp(f"file:/databricks/driver/{local_data_path}/sensor_readings_current_labeled_v4.csv", f"dbfs:/FileStore/mlflowdemo/{dbfs_data_path}sensor_readings_current_labeled.csv")
-
-
-
-# COMMAND ----------
 
 
 
